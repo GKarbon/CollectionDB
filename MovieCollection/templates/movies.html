@@ -1,0 +1,139 @@
+<!-- movies.html -->
+<html>
+<head>
+
+    <title>Movie Shelf</title>
+    <style>
+        body {
+            background-color: rgb(108, 174, 193);
+        }
+
+        .title {
+            text-align: center;
+            color: rgb(255, 255, 255);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .input-container {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .movie-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .movie {
+            width: 200px;
+            text-align: center;
+            background-color: rgb(35, 76, 90);
+            border-radius: 10px;
+            box-shadow: 5px 7px 16px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .movie img {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 5px;
+            margin-top: 10px;
+        }
+
+        .movie_title {
+            color: rgb(255, 255, 255);
+            font-size: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .category {
+            color: rgb(255, 255, 255);
+            font-size: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgba(255, 0, 0, 0.547);
+            border-radius: 5px;
+            padding: 2px 2px;
+            margin: 0 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 class="title">Movie Shelf</h1>
+    <div class="input-container">
+        <input type="text" id="input-url" placeholder="输入链接">
+        <button onclick="submitUrl()">提交</button>
+    </div>
+
+    <div id="response-container"></div>
+
+    <div class="movie-container">
+        {% for movie in movies %}
+            <div class="movie">
+                <img src="{{ movie.cover.url }}" alt="{{ movie.title }} Cover" width="200">
+                <h2 class="movie_title">{{ movie.title }}</h2>
+                <p style="color: aliceblue;font-weight: 400;">
+                    分类: 
+                    {% for category in movie.category.all %}
+                        <span class="category">{{ category.name }}</span>
+                    {% endfor %}
+                </p>
+            
+            </div>
+        {% empty %}
+            <p>No movies available.</p>
+        {% endfor %}
+    </div>
+</body>
+<script>
+    function submitUrl() {
+        var input = document.getElementById("input-url");
+        var url = input.value;
+        console.log("URL:", url);
+        
+        var data = JSON.stringify({ url: url });
+        console.log("Data:", data);
+
+        var xhr = new XMLHttpRequest();
+        console.log("XHR:", xhr);
+        xhr.open("POST", "/api/crawl/", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+        
+        xhr.send(data);
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                // 请求成功的处理逻辑
+                var response = JSON.parse(xhr.responseText);
+                console.log(response);
+            }
+        };
+
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function displayResponse(response) {
+            var responseContainer = document.getElementById("response-container");
+            responseContainer.textContent = JSON.stringify(response);
+        }
+
+</script>
+</html>
