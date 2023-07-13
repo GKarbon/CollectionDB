@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .movieCollector import movieCollector
+from .douBanMovieCollector import movieCollector
 from MovieCollection.models import Movie, Actor, Category
 import json
 import os
