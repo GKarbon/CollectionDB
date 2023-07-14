@@ -49,9 +49,9 @@ def movieCollector(url: str) -> Tuple[str, List[str], List[str], str]:
     img_url = img_element['src']if img_element else None # type: ignore
     try:
         _, ext = os.path.splitext(img_url) # type: ignore
-        print(ext)
-        print(os.getcwd())
-        print(img_url)    
+        # print(ext)
+        # print(os.getcwd())
+        # print(img_url)    
 
         response = requests.get(img_url, headers=headers) # type: ignore
 
